@@ -53,7 +53,18 @@ app.put("/users/:id", (req: Request, res: Response) => {
 });
 
 app.post("/users", (req: Request, res: Response) => {
-  const novoUsuario: Usuario = req.body;
+  const { nome, idade } = req.body; // nome: "nome", idade: number
+
+  /*
+  let maxId: number = 0;
+  for (const user of users){
+    if (user.id > maxId) maxId = user.id
+  }
+  */
+  const maxId: number = users.reduce( (max, user) => (user.id > max ? user.id : max), 0 )  
+
+  const novoUsuario: Usuario = {id: maxId + 1, nome, idade }
+
   users.push(novoUsuario);
   res.status(201).json(users);
 });
