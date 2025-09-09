@@ -70,15 +70,14 @@ app.post("/users", (req: Request, res: Response) => {
 });
 
 app.delete("/users/:id", (req: Request, res: Response) => {
-  const id = Number(req.params.id);
+  const userId: number = Number(req.params.id);
 
-  const userIndex = users.findIndex((user) => user.id === id);
+  const userIndex: number = users.findIndex((user) => user.id === userId);
 
   if (userIndex === -1) {
     return res.status(404).json({ error: "Usuário não encontrado" });
   }
 
-  const userRemovido = users.splice(userIndex, 1);
-
-  res.json(userRemovido[0]);
+  users.splice(userIndex)
+  res.status(204).send();
 });
