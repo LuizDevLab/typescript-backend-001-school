@@ -38,18 +38,18 @@ app.get("/users/:id", (req: Request, res: Response) => {
 });
 
 app.put("/users/:id", (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const dadosAtualizados = req.body;
+  const userId: number = Number(req.params.id);
+  const { nome, idade } = req.body;
 
-  const userIndex = users.findIndex((user) => user.id === id);
+  const userIndex: number = users.findIndex((user) => user.id === userId);
 
   if (userIndex === -1) {
     return res.status(404).json({ error: "Usuário não encontrado" });
   }
 
-  users[userIndex] = { ...users[userIndex], ...dadosAtualizados };
-
-  res.json(users[userIndex]);
+  const usuarioAtt: Usuario = {id: userId, nome, idade}
+  users[userIndex] = usuarioAtt;
+  res.json(usuarioAtt);
 });
 
 app.post("/users", (req: Request, res: Response) => {
