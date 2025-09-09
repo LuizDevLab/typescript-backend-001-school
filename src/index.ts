@@ -28,9 +28,14 @@ app.get("/users", (req: Request, res: Response) => {
   res.json(users);
 });
 
-app.get("users/:id", (req: Request, res: Response) => {
-  
-})
+app.get("/users/:id", (req: Request, res: Response) => {
+  const userId: number = Number(req.params.id);
+  const usuariosEncontrados: Usuario | undefined = users.find((user) => user.id == userId)
+  if (!usuariosEncontrados) {
+    res.status(404).json("Usuario nao encontrado")
+  } 
+  res.json(usuariosEncontrados)
+});
 
 app.put("/users/:id", (req: Request, res: Response) => {
   const id = Number(req.params.id);
