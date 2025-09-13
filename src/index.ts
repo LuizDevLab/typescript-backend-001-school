@@ -31,71 +31,67 @@ app.get("/users", (req: Request, res: Response) => {
 app.get("/users/:id", (req: Request, res: Response) => {
   const userId: number = Number(req.params.id);
 
-
   if (isNaN(userId) || userId <= 0) {
-    res.status(400).json("Id inválido")
+    return res.status(400).json("Id inválido");
   }
 
-  const usuariosEncontrados: Usuario | undefined = users.find((user) => user.id == userId)
+  const usuariosEncontrados: Usuario | undefined = users.find((user) => user.id == userId);
   if (!usuariosEncontrados) {
-    res.status(404).json("Usuario nao encontrado")
+    return res.status(404).json("Usuario nao encontrado");
   } 
-  res.json(usuariosEncontrados)
+
+  return res.json(usuariosEncontrados);
+});
+
+app.post("/users", (req: Request, res: Response) => {
+  const { nome, idade } = req.body;
+
+  if (typeof nome !== "string" || nome.trim() == "") {
+    return res.status(400).json("nome inválido");
+  }
+
+  if (typeof idade !== "number" || !Number.isInteger(idade) || idade <= 0){
+    return res.status(400).json("Idade inválida");
+  }
+
+  const maxId: number = users.reduce((max, user) => (user.id > max ? user.id : max), 0);  
+  const novoUsuario: Usuario = { id: maxId + 1, nome, idade };
+
+  users.push(novoUsuario);
+  return res.status(201).json(users);
 });
 
 app.put("/users/:id", (req: Request, res: Response) => {
   const userId: number = Number(req.params.id);
   const { nome, idade } = req.body;
 
-  const userIndex: number = users.findIndex((user) => user.id === userId);
+  if (isNaN(userId) || userId <= 0) {
+    return res.status(400).json("Id inválido");
+  }
 
+  const userIndex: number = users.findIndex((user) => user.id === userId);
   if (userIndex === -1) {
     return res.status(404).json({ error: "Usuário não encontrado" });
   }
 
-  const usuarioAtt: Usuario = {id: userId, nome, idade}
+  const usuarioAtt: Usuario = { id: userId, nome, idade };
   users[userIndex] = usuarioAtt;
-  res.json(usuarioAtt);
-});
 
-app.post("/users", (req: Request, res: Response) => {
-  const { nome, idade } = req.body; // nome: "nome", idade: number
-
-  if (typeof nome !== "string" || nome.trim() == "") {
-    res.status(400).json("nome inválido")
-  }
-
-  if (typeof idade !== "number" || !Number.isInteger(idade) || idade <= 0){
-    res.status(400).json("Idade inválida")
-  }
-
-  /*
-  let maxId: number = 0;
-  for (const user of users){
-    if (user.id > maxId) maxId = user.id
-  }
-  */
-  const maxId: number = users.reduce( (max, user) => (user.id > max ? user.id : max), 0 )  
-
-  const novoUsuario: Usuario = {id: maxId + 1, nome, idade }
-
-  users.push(novoUsuario);
-  res.status(201).json(users);
+  return res.json(usuarioAtt);
 });
 
 app.delete("/users/:id", (req: Request, res: Response) => {
   const userId: number = Number(req.params.id);
 
-  const userIndex: number = users.findIndex((user) => user.id === userId);
-
   if (isNaN(userId) || userId <= 0) {
-    res.status(400).json("Id inválido")
+    return res.status(400).json("Id inválido");
   }
 
+  const userIndex: number = users.findIndex((user) => user.id === userId);
   if (userIndex === -1) {
     return res.status(404).json({ error: "Usuário não encontrado" });
   }
 
-  users.splice(userIndex)
-  res.status(204).send();
+  users.splice(userIndex, 1);
+  return res.status(204).send();
 });
